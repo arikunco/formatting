@@ -118,7 +118,7 @@ produk <- ol_sample_drop %>% select(StockCode,Description,UnitPrice) %>% distinc
 
 transaksi <- ol_sample_drop %>% select(InvoiceDate,InvoiceNo,StockCode,Quantity,UnitPrice,CustomerID) %>% distinct() %>% filter(CustomerID>10000)
 
-# write into table
+# dump into files
 write.csv(transaksi,"transaksi.csv",row.names = F)
 write.table(produk,"produk.csv",row.names = F,sep = "|",quote = F)
 write.csv(profil_pelanggan,"profile_pelanggan.csv",row.names = F,quote=F)
