@@ -82,10 +82,16 @@ df_rfm <- recency %>% left_join(frekuensi,by="_______") %>% left_join(monetary,b
 # Check summary df_rfm, can you check the median of each recency, frekuensi, and monetary?
 summary(_____)
 
-# Median of recency, frequensi, dan monetary
+# Median of recency, frequensi, dan monetary known. 
+
+# Encode with this condition: If more than median high, if less than median low, and assign as variable: df_rfm_encod
 
 # Create new dataframe which consists of customerID | country 
 origin <- ol_sample_drop %>% select(CustomerID, Country) %>% distinct()
+
+# Join with df_rfm_encod with origin data frame 
+
+# What country that has the most low recent and high frequency customers?
 
 
 #################Bonus################
