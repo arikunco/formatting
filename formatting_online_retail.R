@@ -1,5 +1,5 @@
 # Title       : Formatting_Data_Online_Retail.R 
-# Description : This is an online retail script and its formatting process.
+# Description : This is an online retail script and its formatting process with RFM method.
 # Objective   : To format data (after cleaning)
 # Data source : https://archive.ics.uci.edu/ml/datasets/online+retail 
 
