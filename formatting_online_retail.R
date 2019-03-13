@@ -24,6 +24,7 @@ summary(onlineretail)
 
 plot_missing(onlineretail)
 
+# Set benih random
 set.seed(10)
 
 # sampling data 
@@ -61,24 +62,35 @@ length(ol_sample[is.na(ol_sample$CustomerID),])
 plot_missing(ol_sample_drop)
 plot_missing(ol_sample_imput)
 
-# Quiz      : Please make a tidy table from produk, transaksi, and profil_pelanggan table, thus contain the following variables: 
+# Quiz      : Please make a tidy table from produk, transaksi, and profil_pelanggan table, thus contain the following variables using ol_sample_drop data frame: 
 # CustomerID | Recency | Frequency | Amount 
 # Recency   : jumlah hari ini s.d. terakhir bertransaksi (dalam hari)
 # Frequency : jumlah transaksi yang terjadi dalam 6 bulan terakhir 
-# Monetary  : jumlah rupiah yang dibelanjakan oleh Customer ID unik
+# Monetary  : jumlah uang yang dibelanjakan oleh Customer ID unik
 
-frekuensi <- ol_sample_drop %>% group_by(CustomerID) %>% summarise(jumlah_transaksi = n_distinct(InvoiceNo))
-recency <- ol_sample_drop %>% group_by(CustomerID) %>% arrange(desc(InvoiceDate)) %>%   filter(row_number()==1) %>% mutate(recent = as.numeric(as.duration(interval(InvoiceDate,ymd("2011-12-31"))))/86400) %>% select(CustomerID, recent)                                                                                                   
-monetary <- ol_sample_drop %>% group_by(CustomerID) %>% summarise(monet=sum(UnitPrice*Quantity))                                               
+frekuensi <- ol_sample_drop %>% group_by(CustomerID) %>% summarise(frekuensi = n_distinct(_______)) 
+
+monetary <- ol_sample_drop %>% group_by(CustomerID) %>% summarise(monetary=sum(UnitPrice*______))                                               
+
+recency <- ol_sample_drop %>% group_by(CustomerID) %>% arrange(desc(InvoiceDate)) %>%   filter(row_number()==1) %>% mutate(recency = as.numeric(as.duration(interval(InvoiceDate,ymd("2011-12-31"))))/86400) %>% select(______, recent)  
 
 # Quiz join ketiga nya.
 # (hint: dengan menggunakan left_join function)
-# 
+
+df_rfm <- recency %>% left_join(frekuensi,by="_______") %>% left_join(monetary,by="_______")
+
+# Check summary df_rfm, can you check the median of each recency, frekuensi, and monetary?
+summary(_____)
+
+# Median of recency, frequensi, dan monetary
+
+# Create new dataframe which consists of customerID | country 
+origin <- ol_sample_drop %>% select(CustomerID, Country) %>% distinct()
 
 
-#################Bonus##########
+#################Bonus################
 
-# We would like to change country column from United Kingdom into DKI Jakarta, Germany to Jawa Barat, EIRE to Banten, and Spain to Jawa Tengah, France to DI Yogyakarta, Sqitzerland to Jawa Timur, others to Luar Jawa, we can use mutate
+# We would like to change country column from United Kingdom into DKI Jakarta, Germany to Jawa Barat, EIRE to Banten, and Spain to Jawa Tengah, France to DI Yogyakarta, Sqitzerland to Jawa Timur, others to Luar Jawa, we can also use mutate to create Province column. 
 
 # select, filter, mutate, and group_by in one shot! :)  
 profil_pelanggan <- ol_sample_drop %>% 
