@@ -68,33 +68,37 @@ plot_missing(ol_sample_imput)
 # Frequency : jumlah transaksi yang terjadi dalam 6 bulan terakhir 
 # Monetary  : jumlah uang yang dibelanjakan oleh Customer ID unik
 
-frekuensi <- ol_sample_drop %>% group_by(CustomerID) %>% summarise(frekuensi = n_distinct(_______)) 
+frequency <- ol_sample_drop %>% group_by(CustomerID) %>% summarise(frequency = n_distinct(_______)) 
 
 monetary <- ol_sample_drop %>% group_by(CustomerID) %>% summarise(monetary=sum(UnitPrice*______))                                               
 
-recency <- ol_sample_drop %>% group_by(CustomerID) %>% arrange(desc(InvoiceDate)) %>%   filter(row_number()==1) %>% mutate(recency = as.numeric(as.duration(interval(InvoiceDate,ymd("2011-12-31"))))/86400) %>% select(______, recent)  
+recency <- ol_sample_drop %>% group_by(CustomerID) %>% arrange(desc(InvoiceDate)) %>%   filter(row_number()==1) %>% mutate(recency = as.numeric(as.duration(interval(InvoiceDate,ymd("2011-12-31"))))/86400) %>% select(______, recency)  
 
 # Quiz join ketiga nya.
 # (hint: dengan menggunakan left_join function)
 
-df_rfm <- recency %>% left_join(frekuensi,by="_______") %>% left_join(monetary,by="_______")
+df_rfm <- recency %>% left_join(frequency,by="_______") %>% left_join(monetary,by="_______")
 
-# Check summary df_rfm, can you check the median of each recency, frekuensi, and monetary?
+# Check summary df_rfm, can you check the median of each recency, frequency, and monetary?
 summary(_____)
 
-# Median of recency, frequensi, dan monetary known. 
+# Median of recency, frequency, dan monetary known, you can also use function: median(). 
 
-# Encode with this condition: If more than median high, if less than median low, and assign as variable: df_rfm_encod
+# Encode with this condition: If more than median, then high, if less than median then low, and assign as variable: df_rfm_encod
+
+df_rfm_encod <- ____
+
 
 # Create new dataframe which consists of customerID | country 
 origin <- ol_sample_drop %>% select(CustomerID, Country) %>% distinct()
 
-# Join with df_rfm_encod with origin data frame 
+# Join with df_rfm_encod with origin data frame and assign as df_rfm_full
+df_rfm_full <- _____
 
-# What country that has the most low recent and high frequency customers?
+# What are top 3 countries that have the most low recent and high frequency customers?
+____
 
-
-#################Bonus################
+################# Bonus ################
 
 # We would like to change country column from United Kingdom into DKI Jakarta, Germany to Jawa Barat, EIRE to Banten, and Spain to Jawa Tengah, France to DI Yogyakarta, Sqitzerland to Jawa Timur, others to Luar Jawa, we can also use mutate to create Province column. 
 
