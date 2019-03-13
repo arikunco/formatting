@@ -13,9 +13,6 @@ library(DataExplorer)
 # load data
 onlineretail <- read.csv("dataset/OnlineRetail.csv",stringsAsFactors = F)
 
-# load data
-onlineretail <- read.csv("dataset/online_retail/OnlineRetail.csv",stringsAsFactors = F)
-
 # preview first 6 rows of data
 head(onlineretail)
 
@@ -26,6 +23,8 @@ tail(onlineretail)
 summary(onlineretail)
 
 plot_missing(onlineretail)
+
+set.seed(10)
 
 # sampling data 
 ol_sample <- onlineretail[sample(1:nrow(onlineretail), size=10000),]
@@ -55,14 +54,31 @@ ol_sample_drop <- ol_sample[!is.na(ol_sample$CustomerID),]
 # if you want to keep rows with empty customerID, simply use this command, replace with unique value that did not yet input. 
 max_CustID <- max(ol_sample[!is.na(ol_sample$CustomerID),]$CustomerID)
 ol_sample_imput <- ol_sample
-ol_sample_imput$CustomerID[is.na(ol_sample_imput$CustomerID)] <- sample(max_CustID+10000:max_CustID+10000+length(ol_sample), size=sum(is.na(ol_sample_imput$CustomerID)), replace=F)
+ol_sample_imput$CustomerID[is.na(ol_sample_imput$CustomerID)] <- sample(max_CustID+10000:max_CustID+10000+length(ol_sample$CustomerID), size=sum(is.na(ol_sample_imput$CustomerID)), replace=F)
 length(ol_sample[is.na(ol_sample$CustomerID),])
 
 # check missing data again 
 plot_missing(ol_sample_drop)
 plot_missing(ol_sample_imput)
 
-# let's assume we use the drop data (only complete customer id). We would like to change contry column from United Kingdom into Inggris for example, we can use gsub.
+# Quiz      : Please make a tidy table from produk, transaksi, and profil_pelanggan table, thus contain the following variables: 
+# CustomerID | Recency | Frequency | Amount 
+# Recency   : jumlah hari ini s.d. terakhir bertransaksi (dalam hari)
+# Frequency : jumlah transaksi yang terjadi dalam 6 bulan terakhir 
+# Monetary  : jumlah rupiah yang dibelanjakan oleh Customer ID unik
+
+frekuensi <- ol_sample_drop %>% group_by(CustomerID) %>% summarise(jumlah_transaksi = n_distinct(InvoiceNo))
+recency <- ol_sample_drop %>% group_by(CustomerID) %>% arrange(desc(InvoiceDate)) %>%   filter(row_number()==1) %>% mutate(recent = as.numeric(as.duration(interval(InvoiceDate,ymd("2011-12-31"))))/86400) %>% select(CustomerID, recent)                                                                                                   
+monetary <- ol_sample_drop %>% group_by(CustomerID) %>% summarise(monet=sum(UnitPrice*Quantity))                                               
+
+# Quiz join ketiga nya.
+# (hint: dengan menggunakan left_join function)
+# 
+
+
+#################Bonus##########
+
+# We would like to change country column from United Kingdom into DKI Jakarta, Germany to Jawa Barat, EIRE to Banten, and Spain to Jawa Tengah, France to DI Yogyakarta, Sqitzerland to Jawa Timur, others to Luar Jawa, we can use mutate
 
 # select, filter, mutate, and group_by in one shot! :)  
 profil_pelanggan <- ol_sample_drop %>% 
@@ -78,8 +94,9 @@ profil_pelanggan <- ol_sample_drop %>%
 
 produk <- ol_sample_drop %>% select(StockCode,Description,UnitPrice) %>% distinct() %>% mutate(UnitPrice2=20000*UnitPrice) %>% select(StockCode,Description,UnitPrice2) %>% group_by(StockCode) %>% filter(row_number()==1)
 
-transaksi <- ol_sample_drop %>% select(InvoiceDate,InvoiceDate,StockCode,Quantity,CustomerID) %>% distinct() %>% filter(CustomerID>10000)
+transaksi <- ol_sample_drop %>% select(InvoiceDate,InvoiceNo,StockCode,Quantity,UnitPrice,CustomerID) %>% distinct() %>% filter(CustomerID>10000)
 
+# write into table
 write.csv(transaksi,"transaksi.csv",row.names = F)
 write.table(produk,"produk.csv",row.names = F,sep = "|",quote = F)
 write.csv(profil_pelanggan,"profile_pelanggan.csv",row.names = F,quote=F)
@@ -91,12 +108,3 @@ profil_pelanggan_to_wide <- spread(profil_pelanggan,Province,jumlah)
 # Exercise of tidyr (changing profil_pelanggan from wide to long)
 profil_pelanggan_to_long <- gather(profil_pelanggan_to_wide,Province,Jumlah,-CustomerID,na.rm = T)
 head(profil_pelanggan_to_long)
-
-# Quiz      : Please make a tidy table from produk, transaksi, and profil_pelanggan table, thus contain the following variables: 
-# CustomerID | Recency | Frequency | Amount 
-# Recency   : jumlah hari ini s.d. terakhir bertransaksi (dalam hari)
-# Frequency : jumlah transaksi yang terjadi dalam 6 bulan terakhir 
-# Monetary  : jumlah rupiah yang dibelanjakan oleh Customer ID unik
-
-rfm_df <- profil_pelanggan %>% 
-  left_join(transaksi, by=CustomerID) %>% left_join() 
